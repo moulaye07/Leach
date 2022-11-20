@@ -21,18 +21,18 @@ def start(sensors: list[Sensor], my_model, round_number: int, state: int):
 
         if sensor.E > 0 and sensor.G <= 0:
             a=sensor.E/sensor.Eo
-            b=round(sensor.rs/round((1/my_model.p)))
+            b=round(sensor.rs/(1/my_model.p))
             c=a+b*(1-a)
 
             # Election of Cluster Heads
             temp_rand = random.uniform(0, 1)
 
             if(state==1):
-                value = (my_model.p / (1 - my_model.p * (round_number % round(1 / my_model.p))))*c
+                value = (my_model.p / (1 - my_model.p * (round_number % (1 / my_model.p))))*c
             if(state==2):
-                value = (my_model.p / (1 - my_model.p * (round_number % round(1 / my_model.p))))*a
+                value = (my_model.p / (1 - my_model.p * (round_number % (1 / my_model.p))))*a
             if(state==3):
-                value = (my_model.p / (1 - my_model.p * (round_number % round(1 / my_model.p))))
+                value = (my_model.p / (1 - my_model.p * (round_number % (1 / my_model.p))))
 
             if temp_rand <= value:
                 CH.append(sensor.id)
