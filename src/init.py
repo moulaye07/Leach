@@ -1,9 +1,11 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import random
 from math import *
 
 
 class Model:
-    def __init__(self, n):
+    def __init__(self, n,p,Eo):
         self.n = n
 
         # coordinates of field
@@ -16,11 +18,11 @@ class Model:
         self.sinkE = 100  # Energy of sink
 
         # Optimal Election Probability of a node to become cluster head
-        self.p: float = 0.1
+        self.p: float = p
 
         # %%%%%%%%%%% Energy Model (all values in Joules and each value is for 1byte of data) %%%%%%%%%%%
         # Initial Energy
-        self.Eo: float = 2
+        self.Eo: float = Eo
 
         # ETX = Energy dissipated in Transmission, ERX = in Receive
         self.Eelec: float = 50 * 0.000000001
@@ -67,7 +69,7 @@ class Sensor:
         self.df = 0
         self.type = 'N'
         self.rs=0
-        self.Eo=2
+        self.Eo=5
         self.E: float = 0
         self.id = 0
         self.dis2sink: float = 0
@@ -119,3 +121,28 @@ def create_sensors(my_model: Model):
         # print(f'Dist to sink: {sensors[-1].id} for {sensor.id} is {sensor.dis2sink}')
 
     return sensors
+
+
+
+def reset(Sensors: list[Sensor], my_model: Model, round_number):
+    for sensor in Sensors[:-1]:
+
+        # allow to sensor to become cluster-head. LEACH Algorithm
+        AroundClear = 1 / my_model.p  # After every "AroundClear" rounds, let every sensor be CH again
+        if round_number % AroundClear == 0:
+            sensor.G = 0
+
+        # MCH = member of CH, initially all will have sink as their CH,
+        # so if n = 5, then my_model.n = 5 = 6th node (arrays start from 0)
+        sensor.MCH = my_model.n
+
+        if sensor.type != 'S':
+            sensor.type = 'N'
+        sensor.dis2ch = inf
+
+    srp = 0  # counter number of sent routing packets
+    rrp = 0  # counter number of receive routing packets
+    sdp = 0  # counter number of sent data packets to sink
+    rdp = 0  # counter number of receive data packets by sink
+
+    return srp, rrp, sdp, rdp
